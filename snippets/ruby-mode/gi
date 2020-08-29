@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: gets.to_i
+# group: customize
+# --
+gets.to_i

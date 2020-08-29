@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: when ... then ...
+# group: customize
+# --
+when ${} then ${}

@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: gets.split.map(&:to_i)
+# group: customize
+# --
+gets.split.map(&:to_i)
