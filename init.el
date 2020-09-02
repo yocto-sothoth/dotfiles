@@ -239,8 +239,8 @@
   :ensure t
   :mode (("\\.rb\\'" . enh-ruby-mode))
   :custom-face
-  (erm-syn-warnline ((t (:underline "#ff9800"))))
-  (erm-syn-errline ((t (:underline "#aa4450")))))
+  (erm-syn-warnline ((t (:underline nil))))
+  (erm-syn-errline ((t (:underline nil)))))
 
 (use-package ruby-electric
   :ensure t

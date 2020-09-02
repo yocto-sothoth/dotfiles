@@ -37,7 +37,6 @@ alias h='history 1'
 alias mv='mv -i'
 alias cp='cp -i'
 alias be='bundle exec'
-alias cop='rubocop --require rubocop-performance'
 alias eixt='exit'
 
 case ${OSTYPE} in
