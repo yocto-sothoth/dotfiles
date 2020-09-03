@@ -47,6 +47,7 @@ case ${OSTYPE} in
         alias ll='ls -alF --color'
         ;;
     darwin*)
+        export GPG_TTY=$(tty)
         alias ls='ls -FG'
         alias ll='ls -alFG'
         ;;

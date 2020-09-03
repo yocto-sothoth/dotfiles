@@ -2,7 +2,6 @@ case ${OSTYPE} in
     linux*)
         export PATH=$HOME/.anyenv/bin:$PATH
         export PATH=$HOME/.rbenv/bin:$PATH
-        export PATH=/snap/bin:$PATH
         ;;
     darwin*)
         export PATH=/usr/local/sbin:$PATH
