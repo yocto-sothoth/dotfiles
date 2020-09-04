@@ -71,13 +71,25 @@
   :init
   (setq company-idle-delay 0
         company-minimum-prefix-length 4
-        company-selection-wrap-around t))
+        company-selection-wrap-around t)
+  :config
+  (bind-keys :map company-active-map
+             ("C-p" . company-select-previous-or-abort)
+             ("C-n" . company-select-next-or-abort)))
 
 (use-package company-quickhelp
   :ensure t
   :hook (company-mode . company-quickhelp-mode)
   :config
   (company-quickhelp-mode))
+
+(use-package counsel
+  :ensure t
+  :diminish counsel-mode
+  :init
+  (setq counsel-yank-pop-separator "\n--------\n")
+  :config
+  (counsel-mode 1))
 
 (use-package dashboard
   :ensure t
@@ -86,10 +98,11 @@
                                        ((file-exists-p logo-file) logo-file)
                                        (t 'official))
         dashboard-footer-icon ">"
-        dashboard-items '((recents  . 10)
-                          (projects . 10)
+        dashboard-items '((agenda . 10)
+                          (recents  . 10)
                           (bookmarks . 10)
-                          (registers . 10)))
+                          (projects . 10))
+        show-week-agenda-p t)
   :config
   (dashboard-setup-startup-hook))
 
@@ -133,13 +146,21 @@
   :config
   (exec-path-from-shell-initialize))
 
-(use-package flymake
-  :bind (("C-c n" . flymake-goto-next-error)
-         ("C-c p" . flymake-goto-prev-error))
-  :custom-face
-  (flymake-note ((t (:underline "#87875f"))))
-  (flymake-warning ((t (:underline "#ff9800"))))
-  (flymake-error ((t (:underline "#aa4450")))))
+(use-package flycheck
+  :ensure t
+  :bind (("C-c n" . flycheck-next-error)
+         ("C-c p" . flycheck-previous-error)))
+
+(use-package ivy
+  :ensure t
+  :diminish ivy-mode
+  :config
+  (ivy-mode 1))
+
+(use-package ivy-rich
+  :ensure t
+  :config
+  (ivy-rich-mode 1))
 
 (use-package magit
   :ensure t)
@@ -185,6 +206,10 @@
    do
    (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
      (cl-callf color-saturate-name (face-foreground face) 30))))
+
+(use-package swiper
+  :ensure t
+  :bind ("C-s" . swiper))
 
 (use-package undo-tree
   :ensure t
