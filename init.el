@@ -86,8 +86,9 @@
 (use-package counsel
   :ensure t
   :diminish counsel-mode
+  :bind ("C-s-o" . counsel-rhythmbox)
   :init
-  (setq counsel-yank-pop-separator "\n--------\n")
+  (setq counsel-yank-pop-separator "\n--------------------------------\n")
   :config
   (counsel-mode 1))
 
@@ -162,6 +163,21 @@
   :config
   (ivy-rich-mode 1))
 
+(use-package japanese-holidays
+  :ensure t
+  :init
+  (setq calendar-mark-holidays-flag t)
+  :config
+  (setq calendar-holidays (append japanese-holidays holiday-local-holidays holiday-other-holidays))
+  (defun my/japanese-holiday-show (&rest _args)
+    (let* ((date (calendar-cursor-to-date t))
+           (calendar-date-display-form '((format "%s %s" monthname day)))
+           (date-string (calendar-date-string date))
+           (holiday-list (calendar-check-holidays date)))
+      (when holiday-list
+        (message "%s: %s" date-string (mapconcat #'identity holiday-list "; ")))))
+  (add-hook 'calendar-move-hook 'my/japanese-holiday-show))
+
 (use-package magit
   :ensure t)
 
@@ -181,16 +197,17 @@
 
 (use-package prettify-greek
   :ensure t
+  :init
+  (setq my/prettify-symbols-alist '(("Infinity" . 8734)
+                                    ("Float::INFINITY" . 8734)
+                                    ("!=" . 8800)
+                                    ("<=" . 8804)
+                                    (">=" . 8805)))
   :config
-  (add-hook 'enh-ruby-mode-hook
-            (lambda ()
-              (setq prettify-symbols-alist
-                    (append '(("!=" . 8800)
-                              (">=" . 8805)
-                              ("<=" . 8804))
-                            prettify-greek-lower
-                            prettify-greek-upper))
-              (prettify-symbols-mode))))
+  (add-hook 'enh-ruby-mode-hook (lambda () (setq prettify-symbols-alist my/prettify-symbols-alist)))
+  (add-hook 'eshell-mode-hook (lambda () (setq prettify-symbols-alist my/prettify-symbols-alist)))
+  (add-hook 'shell-mode-hook (lambda () (setq prettify-symbols-alist my/prettify-symbols-alist)))
+  (global-prettify-symbols-mode))
 
 (use-package projectile
   :ensure t)
@@ -343,6 +360,9 @@
   (setq org-directory (if (file-directory-p crowd-dir) crowd-dir "~/org")
         org-default-notes-file "inbox.org"
         org-agenda-files '("~/Dropbox/emacs/inbox.org")
+        org-agenda-current-time-string "now"
+        org-agenda-time-grid '((weekly today required-timed) (1000 1900) "-" "-")
+        org-agenda-time-leading-zero t
         org-log-done 'time
         org-capture-templates
         '(("i" "Inbox" entry (file+headline "inbox.org" "Inbox") "* INBOX %? %U")
