@@ -259,6 +259,12 @@
   :ensure t
   :diminish yas-minor-mode
   :bind ("C-c y" . 'yas-describe-tables)
+  :init
+  (setq yas-new-snippet-default (concat "# -*- mode: snippet -*-\n"
+                                        "# name: ${}\n"
+                                        "# group: customize\n"
+                                        "# --\n"
+                                        "${}"))
   :config
   (yas-global-mode 1))
 
