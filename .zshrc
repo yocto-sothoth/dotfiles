@@ -21,7 +21,7 @@ case ${OSTYPE} in
     linux*)
         alias ll='ls -alF --color'
         alias ls='ls -F --color'
-        FPATH=~/.zsh-completions/src:$FPATH
+        FPATH="$(ghq list -p zsh-completions)"/src:$FPATH
         ;;
     darwin*)
         alias ll='ls -alFG'
