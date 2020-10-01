@@ -34,6 +34,9 @@ Style/NumericLiterals:
 Style/NumericPredicate:
   Enabled: false
 
+Style/SpecialGlobalVars:
+  EnforcedStyle: use_perl_names
+
 Style/StringConcatenation:
   Enabled: false
 
