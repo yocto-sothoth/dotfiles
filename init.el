@@ -1,22 +1,22 @@
 ;; general settings
 
-(setq backup-directory-alist '((".*" . "~/.emacs.d/backup"))
+(setq auto-save-default nil
       crowd-dir "~/Dropbox/emacs"
       custom-file "~/.emacs.d/custom.el"
-      delete-old-versions t
       diary-file (if (file-directory-p crowd-dir) (expand-file-name "diary" crowd-dir) "~/.emacs.d/diary")
       display-time-string-forms '((format "  %s:%s" 24-hours minutes))
       eshell-hist-ignoredups t
       eshell-history-size 1000
       load-prefer-newer t
       logo-file (if (file-directory-p crowd-dir) (expand-file-name "logo.png" crowd-dir))
+      make-backup-files nil
       os-font-height (if (eq system-type 'gnu/linux) 120 160)
-      ring-bell-function 'ignore
-      version-control t)
+      ring-bell-function 'ignore)
 
 (setq-default indent-tabs-mode nil
               indicate-buffer-boundaries 'right)
 
+;; (add-to-list 'default-frame-alist '(alpha . (90 . 50)))
 (delete-selection-mode t)
 (display-battery-mode t)
 (display-time-mode t)
@@ -52,29 +52,36 @@
 (use-package all-the-icons
   :ensure t)
 
+(use-package anki-editor
+  :commands anki-editor-push-notes
+  :ensure t)
+
 (use-package beacon
   :config
   (beacon-mode t)
   :custom
   (beacon-blink-when-window-changes t)
-  (beacon-color "olive")
-  (beacon-size 8)
+  (beacon-size 10)
   :ensure t)
 
 (use-package company
   :bind
-  ("C-c C-c" . company-complete)
+  (("C-c C-c" . company-complete)
+   (:map company-active-map
+         ("C-n" . company-select-next)
+         ("C-p" . company-select-previous)))
   :custom
   (company-minimum-prefix-length 4)
   :diminish company-mode
-  :ensure t)
+  :ensure t
+  :hook (after-init . global-company-mode))
 
 (use-package counsel
   :bind ("C-s-o" . counsel-rhythmbox)
   :config
   (counsel-mode 1)
   :custom
-  (counsel-yank-pop-separator "\n--------------------------------\n")
+  (counsel-yank-pop-separator "\n----------------------------------------\n")
   :diminish counsel-mode
   :ensure t)
 
@@ -109,10 +116,10 @@
   :ensure t)
 
 (use-package dired
-  :config
-  (bind-keys :map dired-mode-map
-             ("i" . dired-subtree-insert)
-             ("r" . dired-subtree-remove)))
+  :bind
+  (:map dired-mode-map
+        ("i" . dired-subtree-insert)
+        ("r" . dired-subtree-remove)))
 
 (use-package dired-subtree
   :commands (dired-subtree-insert dired-subtree-remove)
@@ -168,7 +175,7 @@
   :hook (enh-ruby-mode . lsp))
 
 (use-package magit
-  :commands magit-status
+  :bind ("C-c g" . magit)
   :ensure t)
 
 (use-package mozc
@@ -287,6 +294,7 @@
   :ensure t)
 
 (use-package slime-company
+  :after (company slime)
   :ensure t)
 
 ;; ruby
@@ -352,19 +360,28 @@
 (use-package org
   :bind (("C-c a" . 'org-agenda)
          ("C-c c" . 'org-capture)
-         ("C-c l" . 'org-store-link))
+         ("C-c l" . 'org-store-link)
+         ("C-c b" . 'org-switchb))
   :custom
   (org-agenda-current-time-string "now")
-  (org-agenda-files '("~/Dropbox/emacs/inbox.org"))
+  (org-agenda-files (if (file-directory-p crowd-dir) (list (expand-file-name "inbox.org" crowd-dir))
+                      '("~/org/inbox.org")))
+  (org-agenda-include-diary t)
   (org-agenda-time-grid '((weekly today required-timed) (1000 1900) "-" "-"))
   (org-agenda-time-leading-zero t)
   (org-capture-templates
-   '(("i" "Inbox" entry (file+headline "inbox.org" "Inbox") "* INBOX %?")
-     ("w" "Wishlist" entry (file+headline "inbox.org" "Wishlist") "* INBOX %?")
+   '(("a" "Anki - Main" entry (file+headline "anki.org" "Main")
+      "* Card\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic (and reversed card)\n:END:\n** Front\n   %?\n** Back")
+     ("d" "Anki - DUO" entry (file+headline "anki.org" "DUO")
+      "* Card\n:PROPERTIES:\n:ANKI_NOTE_TYPE: Basic (and reversed card)\n:END:\n** Front\n   %?\n** Back")
+     ("e" "Event" entry (file+headline "inbox.org" "Event") "* %?")
+     ("i" "Inbox" entry (file+headline "inbox.org" "Inbox") "* %?")
      ("n" "Note" entry (file+headline "note.org" "Note") "* %?")
-     ("e" "English" entry (file+headline "word.org" "Word") "* %?")))
+     ("w" "Wishlist" entry (file+headline "inbox.org" "Wishlist") "* %?")))
   (org-default-notes-file "inbox.org")
   (org-directory (if (file-directory-p crowd-dir) crowd-dir "~/org"))
-  (org-log-done 'time)
-  (org-todo-keywords
-   '((sequence "INBOX(i)" "TODO(t)" "SOMEDAY(s)" "HIGH(h)" "LOW(l)" "|" "CANCELLED(c)" "DONE(d)"))))
+  (org-file-apps '((auto-mode . emacs)
+                   ("\\.mm\\'" . default)
+                   ("\\.x?html?\\'" . "firefox %s")
+                   ("\\.pdf\\'" . default)))
+  (org-log-done 'time))
