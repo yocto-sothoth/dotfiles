@@ -77,7 +77,6 @@
   :hook (after-init . global-company-mode))
 
 (use-package counsel
-  :bind ("C-s-o" . counsel-rhythmbox)
   :config
   (counsel-mode 1)
   :custom
@@ -203,6 +202,13 @@
 (use-package projectile
   :ensure t)
 
+(use-package projectile-rails
+  :bind-keymap
+  ("C-c r" . projectile-rails-command-map)
+  :config
+  (projectile-rails-global-mode)
+  :ensure t)
+
 (use-package rainbow-delimiters
   :config
   (require 'cl-lib)
@@ -304,7 +310,7 @@
   (erm-syn-errline ((t (:underline nil))))
   (erm-syn-warnline ((t (:underline nil))))
   :ensure t
-  :mode (("\\.rb\\'" . enh-ruby-mode)))
+  :mode (("\\(?:\\.rb\\|ru\\|rake\\|thor\\|jbuilder\\|gemspec\\|podspec\\|/\\(?:Gem\\|Rake\\|Cap\\|Thor\\|Vagrant\\|Guard\\|Pod\\)file\\)\\'" . enh-ruby-mode)))
 
 (use-package inf-ruby
   :custom
@@ -325,18 +331,13 @@
 
 (use-package web-mode
   :custom
-  (web-mode-code-indent-offset 2)
+  (web-mode-auto-close-style 2)
+  (web-mode-auto-quote-style 2)
   (web-mode-css-indent-offset 2)
-  (web-mode-enable-auto-closing t)
-  (web-mode-enable-auto-pairing t)
   (web-mode-markup-indent-offset 2)
-  (web-mode-script-padding 2)
-  (web-mode-style-padding 2)
   :ensure t
   :mode (("\\.erb\\'" . web-mode)
          ("\\.html?\\'" . web-mode)
-         ("\\.jsx?\\'" . web-mode)
-         ("\\.php\\'" . web-mode)
          ("\\.s?css\\'" . web-mode)))
 
 ;; document
@@ -385,3 +386,15 @@
                    ("\\.x?html?\\'" . "firefox %s")
                    ("\\.pdf\\'" . default)))
   (org-log-done 'time))
+
+;; function
+
+(defun flush-comments ()
+  "Delete ruby comment lines."
+  (interactive)
+  (flush-lines "^\\s-*#.*$"))
+
+(defun flush-empty-lines ()
+  "Delete empty lines."
+  (interactive)
+  (flush-lines "^$"))
