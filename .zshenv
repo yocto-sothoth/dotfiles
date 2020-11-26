@@ -10,6 +10,8 @@ case ${OSTYPE} in
         ;;
     darwin*)
         export GPG_TTY=$(tty)
+        export LESSKEY=$HOME/dotfiles/.lesskey
         export PATH=/usr/local/sbin:$PATH
+        export TERM=xterm-256color
         ;;
 esac

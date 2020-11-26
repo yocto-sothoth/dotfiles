@@ -2,12 +2,11 @@ autoload -Uz promptinit
 promptinit
 prompt adam1 green
 
-setopt correct
 setopt hist_ignore_alldups
 setopt no_beep
 setopt share_history
 
-HISTFILE=~/.zsh_history
+HISTFILE=~/dotfiles/.zsh_history
 HISTSIZE=100000
 SAVEHIST=100000
 
@@ -31,6 +30,6 @@ case ${OSTYPE} in
 esac
 
 autoload -Uz compinit
-compinit
+compinit -d ~/dotfiles/.zcompdump
 
 zstyle ':completion:*' menu select
