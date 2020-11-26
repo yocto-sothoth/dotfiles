@@ -1,0 +1,3 @@
+#env
+LESS=-qR
+LESSHISTFILE=/dev/null
