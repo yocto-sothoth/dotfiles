@@ -3,10 +3,11 @@
 (setq auto-save-default nil
       crowd-dir "~/Dropbox/emacs"
       custom-file "~/.emacs.d/custom.el"
+      default-directory "~/"
       diary-file (if (file-directory-p crowd-dir) (expand-file-name "diary" crowd-dir) "~/.emacs.d/diary")
-      display-time-string-forms '((format "  %s:%s" 24-hours minutes))
+      dired-use-ls-dired (if (eq system-type 'darwin) nil)
       eshell-hist-ignoredups t
-      eshell-history-size 1000
+      eshell-hist-size 1000
       load-prefer-newer t
       logo-file (if (file-directory-p crowd-dir) (expand-file-name "logo.png" crowd-dir))
       make-backup-files nil
@@ -18,8 +19,6 @@
 
 ;; (add-to-list 'default-frame-alist '(alpha . (90 . 50)))
 (delete-selection-mode t)
-(display-battery-mode t)
-(display-time-mode t)
 (fringe-mode '(0))
 (global-display-line-numbers-mode)
 (scroll-bar-mode -1)
@@ -190,7 +189,6 @@
   :config
   (add-hook 'enh-ruby-mode-hook (lambda () (setq prettify-symbols-alist my/prettify-symbols-alist)))
   (add-hook 'eshell-mode-hook (lambda () (setq prettify-symbols-alist my/prettify-symbols-alist)))
-  (add-hook 'shell-mode-hook (lambda () (setq prettify-symbols-alist my/prettify-symbols-alist)))
   (global-prettify-symbols-mode)
   :custom
   (my/prettify-symbols-alist '(("Infinity" . 8734)
@@ -333,6 +331,8 @@
   :custom
   (web-mode-auto-close-style 2)
   (web-mode-auto-quote-style 2)
+  (web-mode-block-padding 2)
+  (web-mode-code-indent-offset 2)
   (web-mode-css-indent-offset 2)
   (web-mode-markup-indent-offset 2)
   :ensure t
