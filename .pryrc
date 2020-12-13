@@ -13,6 +13,7 @@ Pry.set_color(:method, "\e[1m")
 Pry.set_color(:instance_variable, "\e[1m")
 Pry.set_color(:string, :self, "\e[32m")
 Pry.set_color(:string, :delimiter, "\e[32m")
+Pry.set_color(:symbol, "\e[36m")
 Pry.set_color(:operator, "\e[32m")
 Pry.set_color(:keyword, "\e[34m")
 
