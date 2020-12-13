@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
-# name: when ... then ...
+# name: require
 # group: customize
 # --
-when ${} then ${}
+require '$0'
