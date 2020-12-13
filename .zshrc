@@ -1,14 +1,14 @@
 autoload -Uz promptinit
 promptinit
-prompt adam1 green
+prompt adam1 green green green
 
 setopt hist_ignore_alldups
 setopt no_beep
 setopt share_history
 
 HISTFILE=~/dotfiles/.zsh_history
-HISTSIZE=100000
-SAVEHIST=100000
+HISTSIZE=10000
+SAVEHIST=10000
 
 alias be='bundle exec'
 alias cp='cp -i'
