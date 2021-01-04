@@ -16,6 +16,9 @@ Naming/MethodParameterName:
 Security/MarshalLoad:
   Enabled: false
 
+Style/AsciiComments:
+  Enabled: false
+
 Style/ConditionalAssignment:
   Enabled: false
 
