@@ -1,57 +1,75 @@
-;; general settings
+(require 'package)
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
+(package-initialize)
+(unless package-archive-contents (package-refresh-contents))
+(unless (package-installed-p 'use-package) (package-install 'use-package))
 
-(setq alpha 80
-      backup-directory-alist '((".*" . "~/.emacs.d/backup"))
+(setq backup-directory-alist '((".*" . "~/.emacs.d/backup"))
       crowd-dir "~/Dropbox/emacs"
       custom-file "~/.emacs.d/custom.el"
       default-directory "~/"
       delete-old-versions t
-      dired-use-ls-dired (not (eq system-type 'darwin))
-      display-time-string-forms '((format "  %s %s %s %s:%s" dayname monthname day 24-hours minutes))
-      eshell-hist-ignoredups t
-      eshell-history-size 10000
+      dired-use-ls-dired nil
       load-prefer-newer t
-      os-font-height (if (eq system-type 'gnu/linux) 120 160)
+      os-font-height (if (eq system-type 'darwin) 160 120)
       ring-bell-function 'ignore
       version-control t)
+(setq-default indent-tabs-mode nil)
 
 (if (file-directory-p crowd-dir)
-    (setq diary-file (expand-file-name "diary" crowd-dir)
-          logo-file (expand-file-name "logo.png" crowd-dir)))
+    (setq banner (expand-file-name "banner.txt" crowd-dir)
+          diary-file (expand-file-name "diary" crowd-dir)))
 
-(setq-default indent-tabs-mode nil
-              indicate-buffer-boundaries 'right)
-
+(menu-bar-mode 0)
 (delete-selection-mode t)
-(fringe-mode '(0))
 (global-display-line-numbers-mode)
-(global-unset-key (kbd "C-t"))
-(scroll-bar-mode -1)
 (set-face-attribute 'default nil :family "Sarasa Mono J" :height os-font-height)
-(set-frame-parameter nil 'alpha 100)
-(tool-bar-mode -1)
-(tooltip-mode -1)
-(toggle-frame-maximized)
-(if (eq window-system nil) (menu-bar-mode -1))
 
-(defun set-alpha (value)
-  "Set alpha."
-  (interactive "nAlpha: ")
-  (if (eq (frame-parameter nil 'fullscreen) 'fullboth) (set-frame-parameter nil 'fullscreen 'maximized))
-  (unless (equal value 100) (setq alpha value))
-  (set-frame-parameter nil 'alpha value))
+(when (and (eq system-type 'darwin) (eq window-system nil))
+  (defun paste-to-macos (text &optional push)
+    (let ((process-connection-type nil))
+      (let ((proc (start-process "pbcopy" "*Messages*" "pbcopy")))
+        (process-send-string proc text)
+        (process-send-eof proc))))
+  (setq interprogram-cut-function 'paste-to-macos))
 
-(defun toggle-alpha ()
-  "Toggle alpha."
-  (interactive)
-  (if (eq (frame-parameter nil 'fullscreen) 'fullboth) (set-frame-parameter nil 'fullscreen 'maximized))
-  (set-frame-parameter nil 'alpha (if (eq (frame-parameter nil 'alpha) 100) alpha 100)))
+(when window-system
+  (setq alpha 80
+        display-time-string-forms '((format "  %s %s %s %s:%s" dayname monthname day 24-hours minutes))
+        eshell-hist-ignoredups t
+        eshell-history-size 10000)
+  (setq-default indicate-buffer-boundaries 'right)
 
-(defun toggle-modeline ()
-  "Toggle mode line."
-  (interactive)
-  (display-battery-mode (if display-battery-mode -1 1))
-  (display-time-mode (if display-time-mode -1 1)))
+  (add-hook 'after-init-hook (lambda () (call-process "osascript" nil t nil "-e" "tell application \"System Events\" to key code 102")))
+  (add-hook 'after-init-hook (lambda () (toggle-frame-maximized)))
+  (fringe-mode '(0))
+  (menu-bar-mode 1)
+  (scroll-bar-mode -1)
+  (set-frame-parameter nil 'alpha 100)
+  (tool-bar-mode -1)
+  (tooltip-mode -1)
+
+  (defun set-alpha (value)
+    "Set alpha."
+    (interactive "nAlpha: ")
+    (if (eq (frame-parameter nil 'fullscreen) 'fullboth) (set-frame-parameter nil 'fullscreen 'maximized))
+    (unless (equal value 100) (setq alpha value))
+    (set-frame-parameter nil 'alpha value))
+
+  (defun toggle-alpha ()
+    "Toggle alpha."
+    (interactive)
+    (if (eq (frame-parameter nil 'fullscreen) 'fullboth) (set-frame-parameter nil 'fullscreen 'maximized))
+    (set-frame-parameter nil 'alpha (if (eq (frame-parameter nil 'alpha) 100) alpha 100)))
+
+  (defun toggle-modeline ()
+    "Toggle mode line."
+    (interactive)
+    (display-battery-mode (if display-battery-mode -1 1))
+    (display-time-mode (if display-time-mode -1 1)))
+
+  (bind-key "C-M-s-v" 'scroll-other-window-down))
 
 (defun flush-ruby-comments ()
   "Delete ruby comment lines."
@@ -63,27 +81,19 @@
   (interactive)
   (flush-lines "^$"))
 
-;; use-package
+(defun revert-buffer-no-confirm ()
+  "Revert buffer without confirmation."
+  (interactive) (revert-buffer t t))
 
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
-(package-initialize)
-(unless package-archive-contents (package-refresh-contents))
-(unless (package-installed-p 'use-package) (package-install 'use-package))
-
+(global-unset-key (kbd "C-t"))
+(bind-key "<f5>" 'revert-buffer-no-confirm)
 (bind-key "C-h" 'delete-backward-char)
-(bind-key "C-M-s-v" 'scroll-other-window-down)
+(bind-key "C-x ;" 'comment-line)
 
 (use-package diminish
   :config
   (diminish 'abbrev-mode)
   (diminish 'eldoc-mode)
-  :ensure t)
-
-;; each packages
-
-(use-package all-the-icons
   :ensure t)
 
 (use-package anki-editor
@@ -95,6 +105,7 @@
   (beacon-mode t)
   :custom
   (beacon-blink-when-window-changes t)
+  (beacon-size 20)
   :ensure t)
 
 (use-package company
@@ -129,7 +140,8 @@
   (dashboard-items '((recents  . 10)
                      (projects . 10)
                      (bookmarks . 10)))
-  (dashboard-startup-banner (if (and logo-file (file-exists-p logo-file)) logo-file 'official))
+  (dashboard-startup-banner (if (file-exists-p banner) banner 3))
+  (initial-buffer-choice (lambda () (dashboard-refresh-buffer) (get-buffer "*dashboard*")))
   :ensure t)
 
 (use-package doom-modeline
@@ -165,7 +177,8 @@
   :config
   (global-disable-mouse-mode)
   :diminish disable-mouse-global-mode
-  :ensure t)
+  :ensure t
+  :if window-system)
 
 (use-package enh-ruby-mode
   :custom-face
@@ -178,7 +191,8 @@
   :config
   (exec-path-from-shell-initialize)
   (exec-path-from-shell-copy-env "RUBY_THREAD_VM_STACK_SIZE")
-  :ensure t)
+  :ensure t
+  :if window-system)
 
 (use-package eshell
   :config
@@ -234,14 +248,16 @@
   :init
   (add-hook 'eshell-mode-hook (lambda () (define-key eshell-mode-map (kbd "C-a") 'pry-on-eshell-bol)))
   (add-hook 'eshell-mode-hook (lambda () (define-key eshell-mode-map (kbd "M-n") 'pry-on-eshell-next-input)))
-  (add-hook 'eshell-mode-hook (lambda () (define-key eshell-mode-map (kbd "M-p") 'pry-on-eshell-previous-input))))
+  (add-hook 'eshell-mode-hook (lambda () (define-key eshell-mode-map (kbd "M-p") 'pry-on-eshell-previous-input)))
+  :if window-system)
 
 (use-package flycheck
   :bind (("C-c n" . flycheck-next-error)
          ("C-c p" . flycheck-previous-error))
+  :config
+  (global-flycheck-mode)
   :custom
   (flycheck-idle-change-delay 1)
-  :hook ((enh-ruby-mode . flycheck-mode) (crystal-mode . flycheck-mode))
   :ensure t)
 
 (use-package flycheck-crystal
@@ -257,11 +273,12 @@
     ("f" (lambda () (interactive) (insert "finish") (eshell-send-input)) "finish")
     ("n" (lambda () (interactive) (insert "next") (eshell-send-input)) "next")
     ("s" (lambda () (interactive) (insert "step") (eshell-send-input)) "step")
-    ("g" nil "cancel")))
+    ("g" nil "cancel"))
+  :if window-system)
 
 (use-package inf-ruby
-  :custom
-  (inf-ruby-default-implementation "pry")
+  :config
+  (add-hook 'inf-ruby-mode-hook (lambda () (electric-pair-local-mode 1)))
   :ensure t
   :hook (enh-ruby-mode . inf-ruby-minor-mode))
 
@@ -294,7 +311,9 @@
 (use-package lsp-mode
   :diminish lsp-mode
   :ensure t
-  :hook (enh-ruby-mode . lsp))
+  :hook (enh-ruby-mode . lsp)
+  :init
+  (setq lsp-headerline-arrow ">"))
 
 (use-package magit
   :bind ("C-c g" . magit)
@@ -303,6 +322,8 @@
 (use-package markdown-mode
   :custom
   (markdown-command "pandoc")
+  ;; :custom-face
+  ;; (markdown-code-face ((t (:background "#222222"))))
   :ensure t
   :mode (("\\.md\\'" . gfm-mode)))
 
@@ -344,18 +365,6 @@
                    ("\\.pdf\\'" . default)))
   (org-log-done 'time))
 
-(use-package prog-mode
-  :config
-  (add-hook 'enh-ruby-mode-hook (lambda () (setq prettify-symbols-alist my/prettify-symbols-alist)))
-  (add-hook 'eshell-mode-hook (lambda () (setq prettify-symbols-alist my/prettify-symbols-alist)))
-  (global-prettify-symbols-mode)
-  :custom
-  (my/prettify-symbols-alist '(("Infinity" . 8734)
-                               ("Float::INFINITY" . 8734)
-                               ("!=" . 8800)
-                               ("<=" . 8804)
-                               (">=" . 8805))))
-
 (use-package projectile
   :ensure t)
 
@@ -395,6 +404,10 @@
 
 (use-package slime-company
   :after (company slime)
+  :ensure t)
+
+(use-package sudo-edit
+  :commands (sudo-edit sudo-edit-find-file)
   :ensure t)
 
 (use-package swiper
