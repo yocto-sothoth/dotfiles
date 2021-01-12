@@ -1,3 +1,7 @@
+;;; init.el --- My dotfiles
+;;; Commentary:
+;;; Code:
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t)
@@ -5,26 +9,23 @@
 (unless package-archive-contents (package-refresh-contents))
 (unless (package-installed-p 'use-package) (package-install 'use-package))
 
+(defvar *crowd-dir* "~/Dropbox/emacs")
+(defvar *os-font-height* (if (eq system-type 'darwin) 160 120))
+(defvar diary-file (if (file-directory-p *crowd-dir*) (expand-file-name "diary" *crowd-dir*) "~/.emacs.d/diary"))
+
 (setq backup-directory-alist '((".*" . "~/.emacs.d/backup"))
-      crowd-dir "~/Dropbox/emacs"
       custom-file "~/.emacs.d/custom.el"
       default-directory "~/"
       delete-old-versions t
-      dired-use-ls-dired nil
       load-prefer-newer t
-      os-font-height (if (eq system-type 'darwin) 160 120)
       ring-bell-function 'ignore
       version-control t)
 (setq-default indent-tabs-mode nil)
 
-(if (file-directory-p crowd-dir)
-    (setq banner (expand-file-name "banner.txt" crowd-dir)
-          diary-file (expand-file-name "diary" crowd-dir)))
-
 (menu-bar-mode 0)
 (delete-selection-mode t)
 (global-display-line-numbers-mode)
-(set-face-attribute 'default nil :family "Sarasa Mono J" :height os-font-height)
+(set-face-attribute 'default nil :family "Sarasa Mono J" :height *os-font-height*)
 
 (when (and (eq system-type 'darwin) (eq window-system nil))
   (defun paste-to-macos (text &optional push)
@@ -35,13 +36,11 @@
   (setq interprogram-cut-function 'paste-to-macos))
 
 (when window-system
-  (setq alpha 80
-        display-time-string-forms '((format "  %s %s %s %s:%s" dayname monthname day 24-hours minutes))
-        eshell-hist-ignoredups t
-        eshell-history-size 10000)
+  (defvar *alpha* 80)
+  (defvar display-time-string-forms '((format "  %s %s %s %s:%s" dayname monthname day 24-hours minutes)))
   (setq-default indicate-buffer-boundaries 'right)
 
-  (add-hook 'after-init-hook (lambda () (call-process "osascript" nil t nil "-e" "tell application \"System Events\" to key code 102")))
+  (add-hook 'after-init-hook (lambda () (call-process "osascript" nil nil nil "-e" "tell application \"System Events\" to key code 102")))
   (add-hook 'after-init-hook (lambda () (toggle-frame-maximized)))
   (fringe-mode '(0))
   (menu-bar-mode 1)
@@ -54,22 +53,20 @@
     "Set alpha."
     (interactive "nAlpha: ")
     (if (eq (frame-parameter nil 'fullscreen) 'fullboth) (set-frame-parameter nil 'fullscreen 'maximized))
-    (unless (equal value 100) (setq alpha value))
+    (unless (equal value 100) (setq *alpha* value))
     (set-frame-parameter nil 'alpha value))
 
   (defun toggle-alpha ()
     "Toggle alpha."
     (interactive)
     (if (eq (frame-parameter nil 'fullscreen) 'fullboth) (set-frame-parameter nil 'fullscreen 'maximized))
-    (set-frame-parameter nil 'alpha (if (eq (frame-parameter nil 'alpha) 100) alpha 100)))
+    (set-frame-parameter nil 'alpha (if (eq (frame-parameter nil 'alpha) 100) *alpha* 100)))
 
   (defun toggle-modeline ()
     "Toggle mode line."
     (interactive)
     (display-battery-mode (if display-battery-mode -1 1))
-    (display-time-mode (if display-time-mode -1 1)))
-
-  (bind-key "C-M-s-v" 'scroll-other-window-down))
+    (display-time-mode (if display-time-mode -1 1))))
 
 (defun flush-ruby-comments ()
   "Delete ruby comment lines."
@@ -140,15 +137,15 @@
   (dashboard-items '((recents  . 10)
                      (projects . 10)
                      (bookmarks . 10)))
-  (dashboard-startup-banner (if (file-exists-p banner) banner 3))
+  (dashboard-startup-banner "~/dotfiles/banner.txt")
   (initial-buffer-choice (lambda () (dashboard-refresh-buffer) (get-buffer "*dashboard*")))
   :ensure t)
 
 (use-package doom-modeline
   :config
   (doom-modeline-mode t)
-  (set-face-attribute 'mode-line nil :family "Sarasa Mono J" :height os-font-height)
-  (set-face-attribute 'mode-line-inactive nil :family "Sarasa Mono J" :height os-font-height)
+  (set-face-attribute 'mode-line nil :family "Sarasa Mono J" :height *os-font-height*)
+  (set-face-attribute 'mode-line-inactive nil :family "Sarasa Mono J" :height *os-font-height*)
   :custom
   (doom-modeline-height 1)
   (doom-modeline-icon nil)
@@ -167,7 +164,8 @@
   :bind
   (:map dired-mode-map
         ("i" . dired-subtree-insert)
-        ("r" . dired-subtree-remove)))
+        ("r" . dired-subtree-remove))
+  :custom (dired-use-ls-dired nil))
 
 (use-package dired-subtree
   :commands (dired-subtree-insert dired-subtree-remove)
@@ -181,74 +179,13 @@
   :if window-system)
 
 (use-package enh-ruby-mode
-  :custom-face
-  (erm-syn-errline ((t (:underline nil))))
-  (erm-syn-warnline ((t (:underline nil))))
   :ensure t
   :mode (("\\(?:\\.rb\\|.ru\\|\\.pryrc\\|\\(?:Gem\\|Rake\\|Brew\\)file\\)\\'" . enh-ruby-mode)))
 
 (use-package exec-path-from-shell
   :config
   (exec-path-from-shell-initialize)
-  (exec-path-from-shell-copy-env "RUBY_THREAD_VM_STACK_SIZE")
   :ensure t
-  :if window-system)
-
-(use-package eshell
-  :config
-  (defun pry-on-eshell-bol ()
-    "Goes to the beginning of line, then skips past the prompt, if any."
-    (interactive)
-    (beginning-of-line)
-    (unless (re-search-forward "\\[[0-9]+\\] pry(.+)\\(:[0-9]+\\)?> " nil t)
-      (move-end-of-line 1)
-      (eshell-bol)))
-
-  (defun pry-on-eshell-next-input ()
-    "Show next input history of pry on eshell"
-    (interactive)
-    (cond ((<= pry-history-index 1) (setq pry-history-index 1))
-          ((or (equal last-command 'pry-on-eshell-previous-input)
-               (equal last-command 'pry-on-eshell-next-input)) (cl-decf pry-history-index))
-          (t (setq pry-history-index 1)))
-    (shell-command (concat "cat " pry-history-file " | tail -"
-                           (number-to-string pry-history-index)
-                           " | head -1 | "
-                           (if (eq system-type 'darwin) "ghead" "head")
-                           " -c -1") "*pry-on-eshell-history*" "*pry-on-eshell-history-error*")
-    (beginning-of-line)
-    (if (re-search-forward "\\[[0-9]+\\] pry(.+)\\(:[0-9]+\\)?> " nil t)
-        (progn (delete-region (point) (line-end-position))
-               (insert-buffer "*pry-on-eshell-history*")
-               (end-of-line)
-               (message (concat "Pry history item: " (number-to-string pry-history-index))))
-      (progn (move-end-of-line 1) (eshell-next-input 1))))
-
-  (defun pry-on-eshell-previous-input ()
-    "Show previous input history of pry on eshell"
-    (interactive)
-    (if (or (equal last-command 'pry-on-eshell-previous-input)
-            (equal last-command 'pry-on-eshell-next-input)) (cl-incf pry-history-index)
-      (setq pry-history-index 1))
-    (shell-command (concat "cat " pry-history-file " | tail -"
-                           (number-to-string pry-history-index)
-                           " | head -1 | "
-                           (if (eq system-type 'darwin) "ghead" "head")
-                           " -c -1") "*pry-on-eshell-history*" "*pry-on-eshell-history-error*")
-    (beginning-of-line)
-    (if (re-search-forward "\\[[0-9]+\\] pry(.+)\\(:[0-9]+\\)?> " nil t)
-        (progn (delete-region (point) (line-end-position))
-               (insert-buffer "*pry-on-eshell-history*")
-               (end-of-line)
-               (message (concat "Pry history item: " (number-to-string pry-history-index))))
-      (progn (move-end-of-line 1) (eshell-previous-input 1))))
-  :custom
-  (pry-history-file "~/.local/share/pry/pry_history")
-  (pry-history-index 1)
-  :init
-  (add-hook 'eshell-mode-hook (lambda () (define-key eshell-mode-map (kbd "C-a") 'pry-on-eshell-bol)))
-  (add-hook 'eshell-mode-hook (lambda () (define-key eshell-mode-map (kbd "M-n") 'pry-on-eshell-next-input)))
-  (add-hook 'eshell-mode-hook (lambda () (define-key eshell-mode-map (kbd "M-p") 'pry-on-eshell-previous-input)))
   :if window-system)
 
 (use-package flycheck
@@ -262,19 +199,6 @@
 
 (use-package flycheck-crystal
   :ensure t)
-
-(use-package hydra
-  :ensure t
-  :config
-  (defhydra hydra-eshell-pry (global-map "<f5>")
-    "pry-byebug"
-    ("c" (lambda () (interactive) (insert "continue") (eshell-send-input)) "continue")
-    ("e" (lambda () (interactive) (insert "exit") (eshell-send-input)) "exit")
-    ("f" (lambda () (interactive) (insert "finish") (eshell-send-input)) "finish")
-    ("n" (lambda () (interactive) (insert "next") (eshell-send-input)) "next")
-    ("s" (lambda () (interactive) (insert "step") (eshell-send-input)) "step")
-    ("g" nil "cancel"))
-  :if window-system)
 
 (use-package inf-ruby
   :config
@@ -313,7 +237,7 @@
   :ensure t
   :hook (enh-ruby-mode . lsp)
   :init
-  (setq lsp-headerline-arrow ">"))
+  (defvar lsp-headerline-arrow ">"))
 
 (use-package magit
   :bind ("C-c g" . magit)
@@ -322,8 +246,8 @@
 (use-package markdown-mode
   :custom
   (markdown-command "pandoc")
-  ;; :custom-face
-  ;; (markdown-code-face ((t (:background "#222222"))))
+  :custom-face
+  (markdown-code-face ((t (:background "#222222"))))
   :ensure t
   :mode (("\\.md\\'" . gfm-mode)))
 
@@ -343,7 +267,7 @@
          ("C-c b" . 'org-switchb))
   :custom
   (org-agenda-current-time-string "now")
-  (org-agenda-files (if (file-directory-p crowd-dir) (list (expand-file-name "inbox.org" crowd-dir))
+  (org-agenda-files (if (file-directory-p *crowd-dir*) (list (expand-file-name "inbox.org" *crowd-dir*))
                       '("~/org/inbox.org")))
   (org-agenda-include-diary t)
   (org-agenda-time-grid '((weekly today required-timed) (1000 1900) "-" "-"))
@@ -358,7 +282,7 @@
      ("n" "Note" entry (file+headline "note.org" "Note") "* %?")
      ("w" "Wishlist" entry (file+headline "inbox.org" "Wishlist") "* %?")))
   (org-default-notes-file "inbox.org")
-  (org-directory (if (file-directory-p crowd-dir) crowd-dir "~/org"))
+  (org-directory (if (file-directory-p *crowd-dir*) *crowd-dir* "~/org"))
   (org-file-apps '((auto-mode . emacs)
                    ("\\.mm\\'" . default)
                    ("\\.x?html?\\'" . "firefox %s")
@@ -474,3 +398,5 @@
 (use-package yatex
   :ensure t
   :mode (("\\.tex\\'" . yatex-mode)))
+
+;;; init.el ends here
