@@ -1,4 +1,4 @@
-;;; init.el --- My dotfiles
+;;; init.el
 ;;; Commentary:
 ;;; Code:
 
@@ -15,7 +15,6 @@
 
 (setq backup-directory-alist '((".*" . "~/.emacs.d/backup"))
       custom-file "~/.emacs.d/custom.el"
-      default-directory "~/"
       delete-old-versions t
       load-prefer-newer t
       ring-bell-function 'ignore
@@ -40,7 +39,7 @@
   (defvar display-time-string-forms '((format "  %s %s %s %s:%s" dayname monthname day 24-hours minutes)))
   (setq-default indicate-buffer-boundaries 'right)
 
-  (add-hook 'after-init-hook (lambda () (call-process "osascript" nil nil nil "-e" "tell application \"System Events\" to key code 102")))
+  (if (eq system-type 'darwin) (add-hook 'after-init-hook (lambda () (call-process "osascript" nil nil nil "-e" "tell application \"System Events\" to key code 102"))))
   (add-hook 'after-init-hook (lambda () (toggle-frame-maximized)))
   (fringe-mode '(0))
   (menu-bar-mode 1)
@@ -182,12 +181,6 @@
   :ensure t
   :mode (("\\(?:\\.rb\\|.ru\\|\\.pryrc\\|\\(?:Gem\\|Rake\\|Brew\\)file\\)\\'" . enh-ruby-mode)))
 
-(use-package exec-path-from-shell
-  :config
-  (exec-path-from-shell-initialize)
-  :ensure t
-  :if window-system)
-
 (use-package flycheck
   :bind (("C-c n" . flycheck-next-error)
          ("C-c p" . flycheck-previous-error))
@@ -209,6 +202,8 @@
 (use-package ivy
   :config
   (ivy-mode 1)
+  :custom
+  (ivy-use-selectable-prompt t)
   :diminish ivy-mode
   :ensure t)
 
@@ -383,15 +378,8 @@
   :mode (("\\.yml\\'" . yaml-mode)))
 
 (use-package yasnippet
-  :bind ("C-c y" . 'yas-describe-tables)
   :config
   (yas-global-mode 1)
-  :custom
-  (yas-new-snippet-default (concat "# -*- mode: snippet -*-\n"
-                                   "# name: ${}\n"
-                                   "# group: customize\n"
-                                   "# --\n"
-                                   "${}"))
   :diminish yas-minor-mode
   :ensure t)
 
