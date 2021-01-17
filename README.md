@@ -8,14 +8,15 @@ $ git clone https://github.com/yocto-sothoth/dotfiles
 ## Brewfile
 
 ``` shell
-$ cd ~/dotfiles
-$ brew bundle -v
+$ cd ~
+$ brew bundle -v --file dotfiles/Brewfile
 ```
 
 ## Symlinks
 
 ``` shell
 $ cd ~
+$ ln -s ~/dotfiles/.pryrc
 $ ln -s ~/dotfiles/.tmux.conf
 $ ln -s ~/dotfiles/.zprofile
 $ ln -s ~/dotfiles/.zshenv
@@ -39,13 +40,14 @@ $ git config --global gpg.program gpg
 $ git config --global commit.gpgsign true
 $ git config --global init.defaultBranch main
 $ git config --global pull.rebase false
+$ git config --global core.pager 'less -F'
 ```
 
 ## lesskey
 
 ``` shell
-$ cd ~/dotfiles
-$ lesskey -o .lesskey lesskey
+$ cd ~
+$ lesskey -o .lesskey dotfiles/lesskey
 ```
 
 ## terminfo
