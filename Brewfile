@@ -3,7 +3,6 @@ tap 'homebrew/cask-versions'
 tap 'homebrew/cask-fonts'
 cask_args appdir: '/Applications'
 
-brew 'anyenv'
 brew 'clamav'
 brew 'clisp'
 brew 'coreutils'
