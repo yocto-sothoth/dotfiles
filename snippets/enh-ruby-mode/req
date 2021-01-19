@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # name: require
-# group: customize
+# key: req
 # --
 require '$0'

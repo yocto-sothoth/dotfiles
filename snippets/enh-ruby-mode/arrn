@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # name: Array.new(n)
-# group: customize
+# key: arrn
 # --
-Array.new(${n})
+Array.new(${0:n})

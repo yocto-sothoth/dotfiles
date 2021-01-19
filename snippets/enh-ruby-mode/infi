@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # name: Float::INFINITY
-# group: customize
+# key: infi
 # --
 Float::INFINITY

@@ -1,5 +1,5 @@
 # -*- mode: snippet -*-
 # name: gets.split.map(&:to_i)
-# group: customize
+# key: gsmi
 # --
 gets.split.map(&:to_i)
