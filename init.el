@@ -125,7 +125,7 @@
   :ensure t)
 
 (use-package crystal-mode
-  :mode (("\\.cr\\'" . crystal-mode))
+  :mode "\\.cr\\'"
   :ensure t)
 
 (use-package dashboard
@@ -179,12 +179,13 @@
 
 (use-package enh-ruby-mode
   :ensure t
-  :mode (("\\(?:\\.rb\\|.ru\\|\\.pryrc\\|\\(?:Gem\\|Rake\\|Brew\\)file\\)\\'" . enh-ruby-mode)))
+  :mode "\\(?:\\.rb\\|.ru\\|\\.pryrc\\|\\(?:Gem\\|Rake\\|Brew\\)file\\)\\'")
 
 (use-package flycheck
   :bind (("C-c n" . flycheck-next-error)
          ("C-c p" . flycheck-previous-error))
   :config
+  (flycheck-add-mode 'javascript-eslint 'web-mode)
   (global-flycheck-mode)
   :custom
   (flycheck-idle-change-delay 1)
@@ -226,6 +227,11 @@
   :custom
   (calendar-mark-holidays-flag t)
   :ensure t)
+
+(use-package js
+  :custom
+  (js-indent-level 2)
+  :mode ("\\.js\\'" . js-mode))
 
 (use-package lsp-mode
   :diminish lsp-mode
@@ -313,7 +319,7 @@
 
 (use-package slim-mode
   :ensure t
-  :mode (("\\.slim\\'" . slim-mode)))
+  :mode "\\.slim\\'")
 
 (use-package slime
   :commands slime
@@ -346,11 +352,12 @@
   (web-mode-block-padding 2)
   (web-mode-code-indent-offset 2)
   (web-mode-css-indent-offset 2)
+  (web-mode-enable-auto-closing t)
+  (web-mode-enable-auto-quoting t)
   (web-mode-markup-indent-offset 2)
+  (web-mode-script-padding 2)
   :ensure t
-  :mode (("\\.erb\\'" . web-mode)
-         ("\\.html?\\'" . web-mode)
-         ("\\.s?css\\'" . web-mode)))
+  :mode "\\(?:\\.erb\\|\\.html?\\|.s?css\\)\\'")
 
 (use-package which-key
   :diminish which-key-mode
@@ -375,7 +382,7 @@
 
 (use-package yaml-mode
   :ensure t
-  :mode (("\\.yml\\'" . yaml-mode)))
+  :mode "\\.yml\\'")
 
 (use-package yasnippet
   :config
