@@ -10,8 +10,11 @@ Metrics/AbcSize:
 Metrics/MethodLength:
   Enabled: false
 
+Metrics/ParameterLists:
+  Enabled: false
+
 Naming/MethodParameterName:
-  MinNameLength: 1
+  Enabled: false
 
 Security/MarshalLoad:
   Enabled: false
@@ -39,9 +42,6 @@ Style/NumericPredicate:
 
 Style/SpecialGlobalVars:
   EnforcedStyle: use_perl_names
-
-Style/StringConcatenation:
-  Enabled: false
 
 Style/YodaCondition:
   EnforcedStyle: forbid_for_equality_operators_only
