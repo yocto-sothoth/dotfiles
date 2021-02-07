@@ -18,7 +18,6 @@ $ brew bundle -v --file dotfiles/Brewfile
 $ cd ~
 $ ln -s ~/dotfiles/.pryrc
 $ ln -s ~/dotfiles/.tmux.conf
-$ ln -s ~/dotfiles/.zprofile
 $ ln -s ~/dotfiles/.zshenv
 $ ln -s ~/dotfiles/.zshrc
 
@@ -28,6 +27,13 @@ $ ln -s ~/dotfiles/complex_modifications.json
 $ cd ~/.emacs.d
 $ ln -s ~/dotfiles/init.el
 $ ln -s ~/dotfiles/snippets
+```
+
+## gpg
+
+``` shell
+$ gpg --import xxx
+$ gpg --edit-key xxx trust quit
 ```
 
 ## git
@@ -57,9 +63,8 @@ $ cd ~
 $ tic -x -o .terminfo dotfiles/terminfo-custom.src
 ```
 
-## zsh
+## misc settings
 
-``` shell
-$ echo '/usr/local/bin/zsh' | sudo tee -a /etc/shells > /dev/null
-$ chsh -s /usr/local/bin/zsh
-```
+- ssh
+- clamav
+- rbenv, crenv, pyenv, nvm, etc
