@@ -19,10 +19,10 @@ brew 'pidof'
 brew 'postgresql'
 brew 'pyenv'
 brew 'rbenv'
+brew 'sbcl'
 brew 'screenfetch'
 brew 'tmux'
 brew 'yarn'
-brew 'zsh'
 brew 'zsh-completions'
 
 cask 'alfred'
@@ -48,5 +48,3 @@ cask 'slack'
 cask 'vagrant'
 cask 'virtualbox'
 cask 'zoom'
-
-mas 'Amphetamine', id: 937984704
