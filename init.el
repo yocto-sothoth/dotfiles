@@ -253,15 +253,6 @@
   :ensure t
   :mode (("\\.md\\'" . gfm-mode)))
 
-(use-package mozc
-  :custom
-  (default-input-method "japanese-mozc-im")
-  (mozc-candidate-style 'echo-area)
-  :ensure t)
-
-(use-package mozc-im
-  :ensure t)
-
 (use-package org
   :bind (("C-c a" . 'org-agenda)
          ("C-c c" . 'org-capture)
