@@ -8,7 +8,6 @@ case $OSTYPE in
     darwin*)
         export GPG_TTY=$(tty)
         export LESSKEY=$HOME/.lesskey
-        export PATH=/usr/local/sbin:$PATH
         ;;
     linux*)
         export PYENV_ROOT=$HOME/.pyenv

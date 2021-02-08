@@ -14,7 +14,7 @@ alias be='bundle exec'
 alias cp='cp -i'
 alias e='emacsclient -nw -a ""'
 alias h='history -i 1'
-alias kille='emacsclient -e "(kill-emacs)"'
+alias ke='emacsclient -e "(kill-emacs)"'
 alias mv='mv -i'
 alias t='tmux'
 
@@ -29,7 +29,7 @@ case $OSTYPE in
         alias ll='ls -alFG'
         alias ls='ls -FG'
 
-        [ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"
+        [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"
         osascript -e 'tell application "System Events" to key code 102'
         ;;
     linux*)
