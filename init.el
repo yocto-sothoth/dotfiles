@@ -1,4 +1,4 @@
-;;; init.el
+;;; init.el --- Summary
 ;;; Commentary:
 ;;; Code:
 
@@ -18,12 +18,14 @@
       delete-old-versions t
       load-prefer-newer t
       ring-bell-function 'ignore
+      ;; use-package-compute-statistics t
       version-control t)
 (setq-default indent-tabs-mode nil)
 
-(menu-bar-mode 0)
 (delete-selection-mode t)
+(electric-pair-mode 1)
 (global-display-line-numbers-mode)
+(menu-bar-mode 0)
 (set-face-attribute 'default nil :family "Sarasa Mono J" :height *os-font-height*)
 
 (when (and (eq system-type 'darwin) (eq window-system nil))
@@ -52,7 +54,7 @@
     "Set alpha."
     (interactive "nAlpha: ")
     (if (eq (frame-parameter nil 'fullscreen) 'fullboth) (set-frame-parameter nil 'fullscreen 'maximized))
-    (unless (equal value 100) (setq *alpha* value))
+    (unless (= value 100) (setq *alpha* value))
     (set-frame-parameter nil 'alpha value))
 
   (defun toggle-alpha ()
@@ -85,6 +87,7 @@
 (bind-key "<f5>" 'revert-buffer-no-confirm)
 (bind-key "C-h" 'delete-backward-char)
 (bind-key "C-x ;" 'comment-line)
+(bind-key "C-x c" 'calendar)
 
 (use-package diminish
   :config
@@ -137,7 +140,7 @@
                      (projects . 10)
                      (bookmarks . 10)))
   (dashboard-startup-banner "~/dotfiles/banner.txt")
-  (initial-buffer-choice (lambda () (dashboard-refresh-buffer) (get-buffer "*dashboard*")))
+  (initial-buffer-choice (lambda () (get-buffer "*dashboard*")))
   :ensure t)
 
 (use-package doom-modeline
@@ -195,8 +198,6 @@
   :ensure t)
 
 (use-package inf-ruby
-  :config
-  (add-hook 'inf-ruby-mode-hook (lambda () (electric-pair-local-mode 1)))
   :ensure t
   :hook (enh-ruby-mode . inf-ruby-minor-mode))
 
@@ -301,16 +302,8 @@
   :ensure t)
 
 (use-package rainbow-delimiters
-  :config
-  (require 'cl-lib)
-  (require 'color)
-  (cl-loop
-   for index from 1 to rainbow-delimiters-max-face-count
-   do
-   (let ((face (intern (format "rainbow-delimiters-depth-%d-face" index))))
-     (cl-callf color-saturate-name (face-foreground face) 30)))
   :ensure t
-  :hook (prog-mode . rainbow-delimiters-mode))
+  :hook ((prog-mode slime-repl-mode) . rainbow-delimiters-mode))
 
 (use-package ruby-electric
   :diminish ruby-electric-mode
@@ -323,8 +316,8 @@
 
 (use-package slime
   :commands slime
-  :custom
-  (inferior-lisp-program "clisp")
+  :config
+  (setq inferior-lisp-program "clisp")
   :ensure t)
 
 (use-package slime-company
