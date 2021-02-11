@@ -30,7 +30,6 @@ case $OSTYPE in
         alias ls='ls -FG'
 
         [ -s "/opt/homebrew/opt/nvm/nvm.sh" ] && . "/opt/homebrew/opt/nvm/nvm.sh"
-        osascript -e 'tell application "System Events" to key code 102'
         ;;
     linux*)
         FPATH="$(ghq list -p zsh-completions)"/src:$FPATH

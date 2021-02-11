@@ -41,7 +41,6 @@
   (defvar display-time-string-forms '((format "  %s %s %s %s:%s" dayname monthname day 24-hours minutes)))
   (setq-default indicate-buffer-boundaries 'right)
 
-  (if (eq system-type 'darwin) (add-hook 'after-init-hook (lambda () (call-process "osascript" nil nil nil "-e" "tell application \"System Events\" to key code 102"))))
   (add-hook 'after-init-hook (lambda () (toggle-frame-maximized)))
   (fringe-mode '(0))
   (menu-bar-mode 1)
@@ -94,6 +93,10 @@
   (diminish 'abbrev-mode)
   (diminish 'eldoc-mode)
   :ensure t)
+
+(use-package add-node-modules-path
+  :ensure t
+  :hook ((js-mode web-mode) . add-node-modules-path))
 
 (use-package anki-editor
   :commands anki-editor-push-notes
