@@ -21,9 +21,6 @@ $ ln -s ~/dotfiles/.tmux.conf
 $ ln -s ~/dotfiles/.zshenv
 $ ln -s ~/dotfiles/.zshrc
 
-$ cd ~/.config/karabiner/assets/complex_modifications
-$ ln -s ~/dotfiles/complex_modifications.json
-
 $ cd ~/.emacs.d
 $ ln -s ~/dotfiles/init.el
 $ ln -s ~/dotfiles/snippets

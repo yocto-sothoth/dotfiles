@@ -41,7 +41,6 @@
   (defvar display-time-string-forms '((format "  %s %s %s %s:%s" dayname monthname day 24-hours minutes)))
   (setq-default indicate-buffer-boundaries 'right)
 
-  (if (eq system-type 'darwin) (add-hook 'after-init-hook (lambda () (call-process "osascript" nil nil nil "-e" "tell application \"System Events\" to key code 102"))))
   (add-hook 'after-init-hook (lambda () (toggle-frame-maximized)))
   (fringe-mode '(0))
   (menu-bar-mode 1)
@@ -252,15 +251,6 @@
   (markdown-code-face ((t (:background "#222222"))))
   :ensure t
   :mode (("\\.md\\'" . gfm-mode)))
-
-(use-package mozc
-  :custom
-  (default-input-method "japanese-mozc-im")
-  (mozc-candidate-style 'echo-area)
-  :ensure t)
-
-(use-package mozc-im
-  :ensure t)
 
 (use-package org
   :bind (("C-c a" . 'org-agenda)
