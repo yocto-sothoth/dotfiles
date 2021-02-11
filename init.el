@@ -94,6 +94,10 @@
   (diminish 'eldoc-mode)
   :ensure t)
 
+(use-package add-node-modules-path
+  :ensure t
+  :hook ((js-mode web-mode) . add-node-modules-path))
+
 (use-package anki-editor
   :commands anki-editor-push-notes
   :ensure t)
