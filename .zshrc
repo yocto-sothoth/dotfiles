@@ -14,7 +14,7 @@ alias be='bundle exec'
 alias cp='cp -i'
 alias e='emacsclient -nw -a ""'
 alias h='history -i 1'
-alias kille='emacsclient -e "(kill-emacs)"'
+alias ke='emacsclient -e "(kill-emacs)"'
 alias mv='mv -i'
 alias t='tmux'
 
