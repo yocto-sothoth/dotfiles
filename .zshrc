@@ -10,12 +10,14 @@ setopt share_history
 HISTSIZE=10000
 SAVEHIST=10000
 
+alias act='ruby ~/fragments/util/act.rb'
 alias be='bundle exec'
 alias cp='cp -i'
 alias e='emacsclient -nw -a ""'
 alias h='history -i 1'
 alias ke='emacsclient -e "(kill-emacs)"'
 alias mv='mv -i'
+alias rt='ruby ~/fragments/util/rt.rb'
 alias t='tmux'
 
 eval "$(crenv init -)"
