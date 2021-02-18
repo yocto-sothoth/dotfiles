@@ -22,6 +22,7 @@ brew 'rbenv'
 brew 'sbcl'
 brew 'screenfetch'
 brew 'tmux'
+brew 'xz'
 brew 'yarn'
 brew 'zsh-completions'
 
