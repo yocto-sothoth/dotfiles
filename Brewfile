@@ -28,6 +28,7 @@ brew 'zsh-completions'
 
 cask 'alfred'
 cask 'anki'
+cask 'aquaskk'
 cask 'balenaetcher'
 cask 'basictex'
 cask 'bettertouchtool'
