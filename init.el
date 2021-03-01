@@ -9,16 +9,17 @@
 (unless package-archive-contents (package-refresh-contents))
 (unless (package-installed-p 'use-package) (package-install 'use-package))
 
-(defvar *crowd-dir* "~/Dropbox/emacs")
-(defvar *os-font-height* (if (eq system-type 'darwin) 160 120))
-(defvar diary-file (if (file-directory-p *crowd-dir*) (expand-file-name "diary" *crowd-dir*) "~/.emacs.d/diary"))
+(defvar crowd-dir "~/Dropbox/emacs")
+(defvar os-font-height (if (eq system-type 'darwin) 160 120))
+(defvar diary-file (if (file-directory-p crowd-dir) (expand-file-name "diary" crowd-dir) "~/.emacs.d/diary"))
+(defvar quail-japanese-use-double-n t)
 
 (setq backup-directory-alist '((".*" . "~/.emacs.d/backup"))
       custom-file "~/.emacs.d/custom.el"
+      default-input-method 'japanese
       delete-old-versions t
       load-prefer-newer t
       ring-bell-function 'ignore
-      ;; use-package-compute-statistics t
       version-control t)
 (setq-default indent-tabs-mode nil)
 
@@ -26,7 +27,7 @@
 (electric-pair-mode 1)
 (global-display-line-numbers-mode)
 (menu-bar-mode 0)
-(set-face-attribute 'default nil :family "Sarasa Mono J" :height *os-font-height*)
+(set-face-attribute 'default nil :family "Sarasa Mono J" :height os-font-height)
 
 (when (and (eq system-type 'darwin) (eq window-system nil))
   (defun paste-to-macos (text &optional push)
@@ -37,11 +38,11 @@
   (setq interprogram-cut-function 'paste-to-macos))
 
 (when window-system
-  (defvar *alpha* 80)
+  (defvar window-alpha 80)
   (defvar display-time-string-forms '((format "  %s %s %s %s:%s" dayname monthname day 24-hours minutes)))
   (setq-default indicate-buffer-boundaries 'right)
 
-  (add-hook 'after-init-hook (lambda () (toggle-frame-maximized)))
+  (add-hook 'after-init-hook 'toggle-frame-maximized)
   (fringe-mode '(0))
   (menu-bar-mode 1)
   (scroll-bar-mode -1)
@@ -53,14 +54,14 @@
     "Set alpha."
     (interactive "nAlpha: ")
     (if (eq (frame-parameter nil 'fullscreen) 'fullboth) (set-frame-parameter nil 'fullscreen 'maximized))
-    (unless (= value 100) (setq *alpha* value))
+    (unless (= value 100) (setq window-alpha value))
     (set-frame-parameter nil 'alpha value))
 
   (defun toggle-alpha ()
     "Toggle alpha."
     (interactive)
     (if (eq (frame-parameter nil 'fullscreen) 'fullboth) (set-frame-parameter nil 'fullscreen 'maximized))
-    (set-frame-parameter nil 'alpha (if (eq (frame-parameter nil 'alpha) 100) *alpha* 100)))
+    (set-frame-parameter nil 'alpha (if (eq (frame-parameter nil 'alpha) 100) window-alpha 100)))
 
   (defun toggle-modeline ()
     "Toggle mode line."
@@ -149,8 +150,8 @@
 (use-package doom-modeline
   :config
   (doom-modeline-mode t)
-  (set-face-attribute 'mode-line nil :family "Sarasa Mono J" :height *os-font-height*)
-  (set-face-attribute 'mode-line-inactive nil :family "Sarasa Mono J" :height *os-font-height*)
+  (set-face-attribute 'mode-line nil :family "Sarasa Mono J" :height os-font-height)
+  (set-face-attribute 'mode-line-inactive nil :family "Sarasa Mono J" :height os-font-height)
   :custom
   (doom-modeline-height 1)
   (doom-modeline-icon nil)
@@ -176,20 +177,11 @@
   :commands (dired-subtree-insert dired-subtree-remove)
   :ensure t)
 
-(use-package disable-mouse
-  :config
-  (global-disable-mouse-mode)
-  :diminish disable-mouse-global-mode
-  :ensure t
-  :if window-system)
-
 (use-package enh-ruby-mode
   :ensure t
   :mode "\\(?:\\.rb\\|.ru\\|\\.pryrc\\|\\(?:Gem\\|Rake\\|Brew\\)file\\)\\'")
 
 (use-package flycheck
-  :bind (("C-c n" . flycheck-next-error)
-         ("C-c p" . flycheck-previous-error))
   :config
   (flycheck-add-mode 'javascript-eslint 'web-mode)
   (global-flycheck-mode)
@@ -220,14 +212,7 @@
 (use-package japanese-holidays
   :config
   (setq calendar-holidays (append japanese-holidays holiday-local-holidays holiday-other-holidays))
-  (defun japanese-holiday-show (&rest _args)
-    (let* ((date (calendar-cursor-to-date t))
-           (calendar-date-display-form '((format "%s %s" monthname day)))
-           (date-string (calendar-date-string date))
-           (holiday-list (calendar-check-holidays date)))
-      (when holiday-list
-        (message "%s: %s" date-string (mapconcat #'identity holiday-list "; ")))))
-  (add-hook 'calendar-move-hook 'japanese-holiday-show)
+  (add-hook 'calendar-today-visible-hook 'calendar-mark-today)
   :custom
   (calendar-mark-holidays-flag t)
   :ensure t)
@@ -263,7 +248,7 @@
          ("C-c b" . 'org-switchb))
   :custom
   (org-agenda-current-time-string "now")
-  (org-agenda-files (if (file-directory-p *crowd-dir*) (list (expand-file-name "inbox.org" *crowd-dir*))
+  (org-agenda-files (if (file-directory-p crowd-dir) (list (expand-file-name "inbox.org" crowd-dir))
                       '("~/org/inbox.org")))
   (org-agenda-include-diary t)
   (org-agenda-time-grid '((weekly today required-timed) (1000 1900) "-" "-"))
@@ -278,7 +263,7 @@
      ("n" "Note" entry (file+headline "note.org" "Note") "* %?")
      ("w" "Wishlist" entry (file+headline "inbox.org" "Wishlist") "* %?")))
   (org-default-notes-file "inbox.org")
-  (org-directory (if (file-directory-p *crowd-dir*) *crowd-dir* "~/org"))
+  (org-directory (if (file-directory-p crowd-dir) crowd-dir "~/org"))
   (org-file-apps '((auto-mode . emacs)
                    ("\\.mm\\'" . default)
                    ("\\.x?html?\\'" . "firefox %s")
