@@ -83,9 +83,9 @@
   "Revert buffer without confirmation."
   (interactive) (revert-buffer t t))
 
+(define-key key-translation-map (kbd "C-h") (kbd "<DEL>"))
 (global-unset-key (kbd "C-t"))
 (bind-key "<f5>" 'revert-buffer-no-confirm)
-(bind-key "C-h" 'delete-backward-char)
 (bind-key "C-x ;" 'comment-line)
 (bind-key "C-x c" 'calendar)
 
