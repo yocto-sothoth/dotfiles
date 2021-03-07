@@ -83,9 +83,13 @@
   "Revert buffer without confirmation."
   (interactive) (revert-buffer t t))
 
-(define-key key-translation-map (kbd "C-h") (kbd "<DEL>"))
-(global-unset-key (kbd "C-t"))
+(require 'quail)
+(unbind-key "C-h" 'quail-conversion-keymap)
+(bind-key "C-h" 'quail-conversion-backward-delete-char quail-conversion-keymap)
+
+(unbind-key "C-t")
 (bind-key "<f5>" 'revert-buffer-no-confirm)
+(bind-key "C-h" 'delete-backward-char)
 (bind-key "C-x ;" 'comment-line)
 (bind-key "C-x c" 'calendar)
 
@@ -325,6 +329,7 @@
   (web-mode-code-indent-offset 2)
   (web-mode-css-indent-offset 2)
   (web-mode-enable-auto-closing t)
+  (web-mode-enable-auto-pairing t)
   (web-mode-enable-auto-quoting t)
   (web-mode-markup-indent-offset 2)
   (web-mode-script-padding 2)
