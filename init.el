@@ -28,6 +28,7 @@
 (global-display-line-numbers-mode)
 (menu-bar-mode 0)
 (set-face-attribute 'default nil :family "Sarasa Mono J" :height os-font-height)
+(set-language-environment 'English)
 
 (when (and (eq system-type 'darwin) (eq window-system nil))
   (defun paste-to-macos (text &optional push)
@@ -144,7 +145,7 @@
   (dashboard-setup-startup-hook)
   :custom
   (dashboard-footer-icon ">")
-  (dashboard-items '((recents  . 10)
+  (dashboard-items '((recents  . 30)
                      (projects . 10)
                      (bookmarks . 10)))
   (dashboard-startup-banner "~/dotfiles/banner.txt")
@@ -333,6 +334,7 @@
   (web-mode-enable-auto-quoting t)
   (web-mode-markup-indent-offset 2)
   (web-mode-script-padding 2)
+  (web-mode-style-padding 2)
   :ensure t
   :mode "\\(?:\\.erb\\|\\.html?\\|.s?css\\)\\'")
 
